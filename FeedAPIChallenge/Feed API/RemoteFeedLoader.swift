@@ -4,24 +4,6 @@
 
 import Foundation
 
-struct FeedImageList: Decodable {
-	let items: [FeedImage]
-
-	struct FeedImage: Decodable {
-		let id: UUID
-		let description: String?
-		let location: String?
-		let url: URL
-
-		enum CodingKeys: String, CodingKey {
-			case id = "image_id"
-			case description = "image_desc"
-			case location = "image_loc"
-			case url = "image_url"
-		}
-	}
-}
-
 public final class RemoteFeedLoader: FeedLoader {
 	private let url: URL
 	private let client: HTTPClient
@@ -53,18 +35,11 @@ public final class RemoteFeedLoader: FeedLoader {
 		guard response.statusCode == 200 else {
 			return .failure(Error.invalidData)
 		}
-
-		guard let itemsList = try? JSONDecoder().decode(FeedImageList.self, from: data) else {
+		do {
+			let items = try FeedLoaderMapper.map(data: data)
+			return .success(items)
+		} catch {
 			return .failure(Error.invalidData)
 		}
-
-		let feedImages = itemsList.items.map({
-			FeedImage(id: $0.id,
-			          description: $0.description,
-			          location: $0.location,
-			          url: $0.url)
-		})
-
-		return .success(feedImages)
 	}
 }
