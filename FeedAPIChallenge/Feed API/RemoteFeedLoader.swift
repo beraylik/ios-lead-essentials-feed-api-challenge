@@ -31,8 +31,10 @@ public final class RemoteFeedLoader: FeedLoader {
 		}
 	}
 
+	private let OK_STATUS_CODE = 200
+	
 	private func handleSuccess(data: Data, response: HTTPURLResponse) -> FeedLoader.Result {
-		guard response.statusCode == 200 else {
+		guard response.statusCode == OK_STATUS_CODE else {
 			return .failure(Error.invalidData)
 		}
 		do {
