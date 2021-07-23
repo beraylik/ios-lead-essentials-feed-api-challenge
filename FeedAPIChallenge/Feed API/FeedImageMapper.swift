@@ -8,7 +8,7 @@
 
 import Foundation
 
-class FeedLoaderMapper {
+final class FeedLoaderMapper {
 	static func map(data: Data) throws -> [FeedImage] {
 		let itemsList = try JSONDecoder().decode(FeedImageList.self, from: data)
 
